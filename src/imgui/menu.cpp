@@ -12,6 +12,9 @@
 #include <d3d11.h>
 #include <tchar.h>
 
+#include "../globals.h"
+#include "../cheat/cheat.h"
+
 // Data
 static ID3D11Device* g_pd3dDevice = nullptr;
 static ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
@@ -35,9 +38,9 @@ int main(int, char**)
     float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
 
     // Create application window
-    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
+    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui win", nullptr };
     ::RegisterClassExW(&wc);
-    HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"Dear ImGui DirectX11 Example", WS_OVERLAPPEDWINDOW, 100, 100, (int)(700 * main_scale), (int)(500 * main_scale), nullptr, nullptr, wc.hInstance, nullptr);
+    HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"AssaultCube cheat", WS_OVERLAPPEDWINDOW, 100, 100, (int)(700 * main_scale), (int)(500 * main_scale), nullptr, nullptr, wc.hInstance, nullptr);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -74,8 +77,8 @@ int main(int, char**)
     bool done = false;
     while (!done)
     {
-        // Poll and handle messages (inputs, window resize, etc.)
-        // See the WndProc() function below for our to dispatch events to the Win32 backend.
+        handler();
+
         MSG msg;
         while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
         {
@@ -111,10 +114,10 @@ int main(int, char**)
 
         {
             ImGui::Begin("Cheat menu");
-            //ImGui::Checkbox("GodMode", &);
-            //ImGui::Checkbox("GodMode", &);
-            //ImGui::Checkbox("GodMode", &);
 
+            bool& godMode = Globals::cheatStatus.at("godMode");
+            ImGui::Checkbox("GodMode", &godMode);
+            ImGui::End();
         }
 
         // Rendering
@@ -125,8 +128,8 @@ int main(int, char**)
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
         // Present
-        HRESULT hr = g_pSwapChain->Present(1, 0);   // Present with vsync
-        //HRESULT hr = g_pSwapChain->Present(0, 0); // Present without vsync
+        //HRESULT hr = g_pSwapChain->Present(1, 0);   // Present with vsync
+        HRESULT hr = g_pSwapChain->Present(0, 0); // Present without vsync
         g_SwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
     }
 

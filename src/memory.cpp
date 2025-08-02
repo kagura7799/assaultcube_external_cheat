@@ -1,6 +1,11 @@
 #include "memory.h"
 
-uintptr_t getModuleBaseAddress(DWORD pid, const std::wstring& moduleName)
+Memory::Memory()
+{
+    initPlayerBaseAddress();
+}
+
+uintptr_t Memory::getModuleBaseAddress(DWORD pid, const std::wstring& moduleName)
 {
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, pid);
     if (!hSnapshot)
@@ -27,13 +32,13 @@ uintptr_t getModuleBaseAddress(DWORD pid, const std::wstring& moduleName)
     return NULL;
 }
 
-void initPlayerBaseAddress()
+void Memory::initPlayerBaseAddress()
 {
-    hwnd = FindWindowA(NULL, "AssaultCube");
+    hwnd = FindWindowW(NULL, L"AssaultCube");
 
     if (!GetWindowThreadProcessId(hwnd, &pid))
     {
-        std::cerr << "[ERROR] Assault Cube not found" << std::endl;
+        std::wcerr << L"[ERROR] module ac_client.exe not found" << std::endl;
         ExitProcess(1);
     }
 
